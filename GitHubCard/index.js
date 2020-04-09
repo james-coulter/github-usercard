@@ -2,16 +2,33 @@
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
+
+let followers_link
+
 const entryPoint = document.querySelector('.cards')
 
-axios.get('https://api.github.com/users/james-coulter/followers')
 
+axios.get('https://api.github.com/users/james-coulter/', { crossdomain: true })
+
+.then(
+  answer =>{
+    const myData = answer.data
+    console.log(answer)
+    cards.appendChild(cardMaker(myData))
+    followers_link = answer.data.followers_url
+})
+.catch(
+  error => {
+    console.log('Corrupt API with personal data')
+  })
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
    data in order to use it to build your component function 
 
    Skip to Step 3.
 */
+
+
 
 /* Step 4: Pass the data received from Github into your function, 
            create a new component and add it to the DOM as a child of .cards
@@ -27,7 +44,22 @@ axios.get('https://api.github.com/users/james-coulter/followers')
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell']
+
+followersArray.forEach(attr => {
+  axios.get('https://api.github.com/users/${attr}/')
+  .then(
+    answer => {
+      cards.appendChild(cardMaker(answer.data))
+    })
+  .catch(
+    error => {
+      console.log('Corrupt API with other users')
+    }
+  )
+})
+
+
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -56,3 +88,53 @@ const followersArray = [];
   luishrd
   bigknell
 */
+
+function cardMaker(attr){
+
+  //Define DOM elements
+  const card = document.createElement('div')
+  const userImg = document.createElement('img')
+  const cardInfo = document.createElement('div')
+  const name = document.createElement('h3')
+  const userName = document.createElement('p')
+  const location = document.createElement('p')
+  const profile = document.createElement('p')
+  const gitAddress = document.createElement('a')
+  const follower = document.createElement('p')
+  const following = document.createElement('p')
+  const bio = document.createElement('p')
+
+  //Add classes
+    card.classList.add('card')
+    cardInfo.classList.add('card-info')
+    name.classList.add('name')
+    userName.classList.add('username')
+
+  //
+  profile.appendChild(gitAddress)
+  cardInfo.appendChild(name)
+  cardInfo.appendChild(userName)
+  cardInfo.appendChild(location)
+  cardInfo.appendChild(profile)
+  cardInfo.appendChild(follower)
+  cardInfo.appendChild(following)
+  cardInfo.appendChild(bio)
+  card.appendChild(userImg)
+  card.appendChile(cardInfo)
+
+  userImg.src = attr.avatar_url
+  name.textContent = attr.name
+  userName.textContent = attr.login
+
+  location.textContent = (`Location: ${attr.location}`)
+  profile.textContent = 'Profile: '
+  gitAddress.href = attr.html_url
+  gitAddress.textContent = attr.html_url
+  follower.textContent = (`Followers: ${attr.followers}`)
+  following.textContent = (`Following: ${attr.following}`)
+  if(bio.textContent !== null){
+    bio.textContent = (`Bio: ${attr.bio}`)
+  }
+
+  return card
+}
