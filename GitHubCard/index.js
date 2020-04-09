@@ -3,24 +3,11 @@
            https://api.github.com/users/<your name>
 */
 
-let followers_link
 
 const entryPoint = document.querySelector('.cards')
 
+const followersArray = ['https://https://api.github.com/users/SandraCoburn', 'https://api.github.com/users/jonush', 'https://api.github.com/users/msheets1983', 'https://api.github.com/users/maryjwaters7']
 
-axios.get('https://api.github.com/users/james-coulter/', { crossdomain: true })
-
-.then(
-  answer =>{
-    const myData = answer.data
-    console.log(answer)
-    cards.appendChild(cardMaker(myData))
-    followers_link = answer.data.followers_url
-})
-.catch(
-  error => {
-    console.log('Corrupt API with personal data')
-  })
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
    data in order to use it to build your component function 
@@ -44,20 +31,20 @@ axios.get('https://api.github.com/users/james-coulter/', { crossdomain: true })
           user, and adding that card to the DOM.
 */
 
-const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell']
+// const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell']
 
-followersArray.forEach(attr => {
-  axios.get('https://api.github.com/users/${attr}/')
-  .then(
-    answer => {
-      cards.appendChild(cardMaker(answer.data))
-    })
-  .catch(
-    error => {
-      console.log('Corrupt API with other users')
-    }
-  )
-})
+// followersArray.forEach(attr => {
+//   axios.get('https://api.github.com/users/${attr}/')
+//   .then(
+//     answer => {
+//       cards.appendChild(cardMaker(answer.data))
+//     })
+//   .catch(
+//     error => {
+//       console.log('Corrupt API with other users')
+//     }
+//   )
+// })
 
 
 
@@ -104,6 +91,18 @@ function cardMaker(attr){
   const following = document.createElement('p')
   const bio = document.createElement('p')
 
+
+  userImg.src = attr.avatar_url
+  name.textContent = attr.name
+  userName.textContent = attr.userName
+  location.textContent = 'Location: ' + attr.location
+  profile.textContent = 'Profile: '
+  gitAddress.textContent = attr.html_url
+  gitAddress.href = attr.html_url
+  follower.textContent = 'Followers: ' + attr.followers
+  following.textContent = 'Following: ' + attr.following
+  bio.textContent = 'Bio ' + attr.bio
+
   //Add classes
     card.classList.add('card')
     cardInfo.classList.add('card-info')
@@ -111,30 +110,40 @@ function cardMaker(attr){
     userName.classList.add('username')
 
   //
-  profile.appendChild(gitAddress)
-  cardInfo.appendChild(name)
-  cardInfo.appendChild(userName)
-  cardInfo.appendChild(location)
-  cardInfo.appendChild(profile)
-  cardInfo.appendChild(follower)
-  cardInfo.appendChild(following)
-  cardInfo.appendChild(bio)
-  card.appendChild(userImg)
-  card.appendChile(cardInfo)
-
-  userImg.src = attr.avatar_url
-  name.textContent = attr.name
-  userName.textContent = attr.login
-
-  location.textContent = (`Location: ${attr.location}`)
-  profile.textContent = 'Profile: '
-  gitAddress.href = attr.html_url
-  gitAddress.textContent = attr.html_url
-  follower.textContent = (`Followers: ${attr.followers}`)
-  following.textContent = (`Following: ${attr.following}`)
-  if(bio.textContent !== null){
-    bio.textContent = (`Bio: ${attr.bio}`)
-  }
-
+  card.append(userImg)
+  card.append(cardInfo)
+  cardInfo.append(name)
+  cardInfo.append(userName)
+  cardInfo.append(location)
+  cardInfo.append(profile)
+  profile.append(gitAddress)
+  cardInfo.append(follower)
+  cardInfo.append(following)
+  cardInfo.append(bio)
+  
   return card
 }
+
+
+axios.get('https://api.github.com/users/james-coulter', { crossdomain: true })
+
+
+.then( response => {
+  console.log(response.data)
+  entryPoint.append(cardMaker(response.data))
+})
+
+.catch( error => {
+  console.log('Issue with personal data', error)
+})
+
+followersArray.forEach(item => {
+  axios.get(item)
+  .then(response => {
+    console.log(response.data)
+    entryPoint.append(cardMaker(response.data));
+  })
+  .catch(error => {
+    console.log("the data was not returned", error)
+  });
+});
