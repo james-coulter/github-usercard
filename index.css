@@ -88,10 +88,14 @@ body {
 }
 
 .cards {
+  display: flex;
+  flex-wrap: wrap;
   width: 100%;
 }
 
 .card {
+  display: flex;
+  flex-wrap: wrap;
   width: 100%;
   padding: 20px;
   display: flex;

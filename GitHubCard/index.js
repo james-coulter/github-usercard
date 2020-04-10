@@ -6,7 +6,7 @@
 
 const entryPoint = document.querySelector('.cards')
 
-const followersArray = ['https://https://api.github.com/users/SandraCoburn', 'https://api.github.com/users/jonush', 'https://api.github.com/users/msheets1983', 'https://api.github.com/users/maryjwaters7']
+// const followersArray = ['https://api.github.com/users/SandraCoburn', 'https://api.github.com/users/jonush', 'https://api.github.com/users/msheets1983', 'https://api.github.com/users/maryjwaters7']
 
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
@@ -92,19 +92,22 @@ function cardMaker(attr){
   const bio = document.createElement('p')
 
 
+
   userImg.src = attr.avatar_url
   name.textContent = attr.name
-  userName.textContent = attr.userName
+  userName.textContent = attr.login
   location.textContent = 'Location: ' + attr.location
   profile.textContent = 'Profile: '
   gitAddress.textContent = attr.html_url
   gitAddress.href = attr.html_url
   follower.textContent = 'Followers: ' + attr.followers
   following.textContent = 'Following: ' + attr.following
-  bio.textContent = 'Bio ' + attr.bio
+  bio.textContent = 'Bio: ' + attr.bio
+
 
   //Add classes
     card.classList.add('card')
+    card.classList.add('cards')
     cardInfo.classList.add('card-info')
     name.classList.add('name')
     userName.classList.add('username')
@@ -120,30 +123,59 @@ function cardMaker(attr){
   cardInfo.append(follower)
   cardInfo.append(following)
   cardInfo.append(bio)
+
   
   return card
 }
 
 
-axios.get('https://api.github.com/users/james-coulter', { crossdomain: true })
+// axios.get('https://api.github.com/users/james-coulter', { crossdomain: true })
 
+
+// .then( response => {
+//   console.log(response.data)
+//   entryPoint.append(cardMaker(response.data))
+// })
+
+// .catch( error => {
+//   console.log('Issue with personal data', error)
+// })
+
+// function getFriends ()
+
+//   axios.get('https://https://api.github.com/users/james-coulter/followers')
+//   .then(response => {
+//     console.log(response.data)
+//     entryPoint.append(cardMaker(response.data));
+//   })
+//   .catch(error => {
+//     console.log("the data was not returned", error)
+//   });
+
+
+const cards = document.querySelector('.cards')
+
+axios.get('https://api.github.com/users/james-coulter', { crossdomain: true})
+.then( response => {
+  cards.append(cardMaker(response.data))
+})
+.catch( errer => {
+  console.log('Looks like a mistake')
+})
+
+axios.get('https://api.github.com/users/james-coulter/followers')
 
 .then( response => {
-  console.log(response.data)
-  entryPoint.append(cardMaker(response.data))
-})
-
-.catch( error => {
-  console.log('Issue with personal data', error)
-})
-
-followersArray.forEach(item => {
-  axios.get(item)
-  .then(response => {
-    console.log(response.data)
-    entryPoint.append(cardMaker(response.data));
+  response.data.forEach( person => {
+    axios.get(person.url)
+    .then(personResponse => {
+      cards.append(cardMaker(personResponse.data))
+    })
+    .catch(personError => {
+      console.log(personError)
+    })
   })
-  .catch(error => {
-    console.log("the data was not returned", error)
-  });
-});
+  .catch( error => {
+    console.log('Mistake in the outer catch')
+  })
+})
