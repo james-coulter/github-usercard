@@ -3,12 +3,19 @@
            https://api.github.com/users/<your name>
 */
 
+
+const entryPoint = document.querySelector('.cards')
+
+// const followersArray = ['https://api.github.com/users/SandraCoburn', 'https://api.github.com/users/jonush', 'https://api.github.com/users/msheets1983', 'https://api.github.com/users/maryjwaters7']
+
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
    data in order to use it to build your component function 
 
    Skip to Step 3.
 */
+
+
 
 /* Step 4: Pass the data received from Github into your function, 
            create a new component and add it to the DOM as a child of .cards
@@ -24,7 +31,22 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+// const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell']
+
+// followersArray.forEach(attr => {
+//   axios.get('https://api.github.com/users/${attr}/')
+//   .then(
+//     answer => {
+//       cards.appendChild(cardMaker(answer.data))
+//     })
+//   .catch(
+//     error => {
+//       console.log('Corrupt API with other users')
+//     }
+//   )
+// })
+
+
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -53,3 +75,107 @@ const followersArray = [];
   luishrd
   bigknell
 */
+
+function cardMaker(attr){
+
+  //Define DOM elements
+  const card = document.createElement('div')
+  const userImg = document.createElement('img')
+  const cardInfo = document.createElement('div')
+  const name = document.createElement('h3')
+  const userName = document.createElement('p')
+  const location = document.createElement('p')
+  const profile = document.createElement('p')
+  const gitAddress = document.createElement('a')
+  const follower = document.createElement('p')
+  const following = document.createElement('p')
+  const bio = document.createElement('p')
+
+
+
+  userImg.src = attr.avatar_url
+  name.textContent = attr.name
+  userName.textContent = attr.login
+  location.textContent = 'Location: ' + attr.location
+  profile.textContent = 'Profile: '
+  gitAddress.textContent = attr.html_url
+  gitAddress.href = attr.html_url
+  follower.textContent = 'Followers: ' + attr.followers
+  following.textContent = 'Following: ' + attr.following
+  bio.textContent = 'Bio: ' + attr.bio
+
+
+  //Add classes
+    card.classList.add('card')
+    card.classList.add('cards')
+    cardInfo.classList.add('card-info')
+    name.classList.add('name')
+    userName.classList.add('username')
+
+  //
+  card.append(userImg)
+  card.append(cardInfo)
+  cardInfo.append(name)
+  cardInfo.append(userName)
+  cardInfo.append(location)
+  cardInfo.append(profile)
+  profile.append(gitAddress)
+  cardInfo.append(follower)
+  cardInfo.append(following)
+  cardInfo.append(bio)
+
+  
+  return card
+}
+
+
+// axios.get('https://api.github.com/users/james-coulter', { crossdomain: true })
+
+
+// .then( response => {
+//   console.log(response.data)
+//   entryPoint.append(cardMaker(response.data))
+// })
+
+// .catch( error => {
+//   console.log('Issue with personal data', error)
+// })
+
+// function getFriends ()
+
+//   axios.get('https://https://api.github.com/users/james-coulter/followers')
+//   .then(response => {
+//     console.log(response.data)
+//     entryPoint.append(cardMaker(response.data));
+//   })
+//   .catch(error => {
+//     console.log("the data was not returned", error)
+//   });
+
+
+const cards = document.querySelector('.cards')
+
+axios.get('https://api.github.com/users/james-coulter', { crossdomain: true})
+.then( response => {
+  cards.append(cardMaker(response.data))
+})
+.catch( errer => {
+  console.log('Looks like a mistake')
+})
+
+axios.get('https://api.github.com/users/james-coulter/followers')
+
+.then( response => {
+  response.data.forEach( person => {
+    axios.get(person.url)
+    .then(personResponse => {
+      cards.append(cardMaker(personResponse.data))
+    })
+    .catch(personError => {
+      console.log(personError)
+    })
+  })
+  .catch( error => {
+    console.log('Mistake in the outer catch')
+  })
+})
